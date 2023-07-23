@@ -1,1 +1,49 @@
+name: CI
 
+on:
+  push:
+    branches:
+      - staging
+      - prod # Change this to your main branch name
+  pull_request:
+
+jobs:
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18'  # Change this to your desired Node.js version
+
+    - name: Install dependencies
+      run: yarn install
+
+    - name: Run ESLint
+      run: yarn lint  # Change this to the command to run ESLint in your project
+      continue-on-error: true
+
+  jest:
+    name: Jest Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18'  # Change this to your desired Node.js version
+
+    - name: Install dependencies
+      run: yarn install
+
+    - name: Run Jest
+      run: yarn test  # Change this to the command to run Jest tests in your project
+      continue-on-error: false
