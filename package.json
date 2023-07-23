@@ -7,6 +7,7 @@
   "author": "Chethan Rao S <chethan@medflix.app>",
   "license": "MIT",
   "dependencies": {
+    "@sentry/node": "^7.60.0",
     "@types/supertest": "^2.0.12",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",

@@ -1,0 +1,22 @@
+name: CD
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Add other steps for building and testing your application here
+
+    #   - name: Deploy to Production
+    #     env:
+    #       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+    #     run: |
+    #       # Add your deployment commands here
+    #       # For example, deploying using SSH to a remote server
+    #       ssh -i $SSH_PRIVATE_KEY user@your-server-ip 'cd /path/to/your/app && git pull && npm install && npm run build && pm2 restart your-app'
