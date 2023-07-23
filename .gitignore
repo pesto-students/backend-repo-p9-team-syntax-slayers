@@ -1,0 +1,26 @@
+# Directories
+node_modules/
+dist/
+coverage/
+
+# Environment
+.env
+
+# Logs
+*.log
+
+# Dependency lock files
+package-lock.json
+yarn.lock
+
+# IDE/Editor specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# macOS specific files
+.DS_Store
+
+# Windows specific files
+Thumbs.db
