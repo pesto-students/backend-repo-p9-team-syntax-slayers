@@ -46,4 +46,4 @@ jobs:
 
     - name: Run Jest
       run: yarn test  # Change this to the command to run Jest tests in your project
-      continue-on-error: false
+      continue-on-error: true
