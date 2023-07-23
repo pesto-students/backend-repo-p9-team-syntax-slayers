@@ -60,5 +60,8 @@
     "*.+(js|json|ts|tsx)": [
       "git add"
     ]
+  },
+  "engines": {
+    "node": ">16"
   }
 }
