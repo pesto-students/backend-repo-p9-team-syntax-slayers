@@ -1,14 +1,16 @@
-import express from 'express';
+import 'reflect-metadata'; // Import reflect-metadata shim
+import dotenv from 'dotenv';
 
-const app = express();
-const port = 3000;
+import { initializeSentry } from './config/sentry';
+import app from './app';
 
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
-});
+// Load environment variables from .env file
+dotenv.config();
+const port = process.env.PORT || 3000;
+
+initializeSentry(); // Initialize Sentry
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
-
 export default app;

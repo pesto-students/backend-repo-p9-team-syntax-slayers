@@ -24,3 +24,6 @@ yarn.lock
 
 # Windows specific files
 Thumbs.db
+
+ormconfig.mongodb.json
+ormconfig.postgres.json
