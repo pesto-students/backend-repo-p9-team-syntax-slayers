@@ -1,7 +1,11 @@
 import { Response, Router, Request } from 'express';
 import authMiddleware from '../middlewares/authMiddleware';
 
-import { myBookings, myFavourites } from '../controllers/UserController';
+import {
+  myBookings,
+  myFavourites,
+  myUpComingBookings,
+} from '../controllers/UserController';
 
 const userRouter = Router();
 
@@ -10,6 +14,14 @@ userRouter.get(
   authMiddleware,
   (req: Request, res: Response) => {
     myBookings(req, res);
+  },
+);
+
+userRouter.get(
+  '/profile/:userId/myUpComingBookings',
+  authMiddleware,
+  (req: Request, res: Response) => {
+    myUpComingBookings(req, res);
   },
 );
 

@@ -6,6 +6,7 @@ export interface BookedService {
 export interface UpcomingBooking {
   orderID: number;
   salonName: string;
+  banner: string;
   startTime: string;
   salonAddress: string;
   bookedServices: BookedService[];
@@ -14,6 +15,7 @@ export interface UpcomingBooking {
 export interface PastBooking {
   orderID: number;
   salonName: string;
+  banner: string;
   startTime: string;
   salonAddress: string;
   bookedServices: BookedService[];
@@ -33,4 +35,14 @@ export interface MyFavSalonData {
   banner: null | string;
   rating: number;
   ratingCount: number;
+}
+
+export interface basicUser {
+  id: string;
+  email: string;
+  firstname: string;
+  lastname: string;
+  profile_pic_url?: string;
+  type: 'salon_admin' | 'user';
+  password?: string;
 }

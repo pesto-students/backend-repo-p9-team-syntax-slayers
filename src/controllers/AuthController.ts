@@ -6,25 +6,50 @@ import { User } from '../postgres/entity/User.entity';
 import generateToken from '../utils/generateToken';
 import { comparePassword, hashPassword } from '../utils/bcryptPassword';
 import { checkUserExists } from '../helper/misc';
+import { basicUser } from '../types/user';
+
+interface CreateUser {
+  firstname: string;
+  lastname: string;
+  email: string;
+  password: string;
+  type: 'user' | 'salon_admin';
+}
 
 const login = async (req: Request, res: Response): Promise<void> => {
   tryCatchWrapper(res, async () => {
     const { password } = req.body;
 
-    const userExists = await checkUserExists(req, res);
+    const userExists: basicUser = await checkUserExists(req, res);
 
-    if (!!userExists && userExists?.password) {
-      const passMatched = await comparePassword(password, userExists?.password);
+    const {
+      id,
+      type,
+      firstname,
+      email,
+      password: hashedPassword,
+      profile_pic_url,
+    } = userExists;
+
+    if (!!userExists && hashedPassword && password) {
+      const passMatched = await comparePassword(
+        password,
+        hashedPassword ? hashedPassword : '',
+      );
 
       if (passMatched) {
         const token = await generateToken(
           req,
           res,
-          userExists?.id,
-          userExists?.type,
+          id,
+          type,
+          firstname,
+          email,
+          profile_pic_url,
         );
 
         const data = { token };
+
         sendResponse(res, 200, true, '', data);
       }
     } else {
@@ -47,7 +72,7 @@ const register = async (req: Request, res: Response): Promise<void> => {
     } else {
       const hashedPassword = await hashPassword(password);
 
-      const userObj = {
+      const userObj: CreateUser = {
         firstname: firstname,
         lastname: lastname,
         email: email,

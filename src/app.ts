@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import authRouter from './routes/auth.routes';
 import userRouter from './routes/user.routes';
 import authLimiter from './middlewares/authLimiter';
+import salonRouter from './routes/salon.routes';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -27,6 +28,7 @@ if (process.env.NODE_ENV === 'production') {
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1', userRouter);
+app.use('/api/v1/salon', salonRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, world!');

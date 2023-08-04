@@ -5,10 +5,13 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { BaseEntity } from '../../common/BaseEntity';
 import { Salon } from './Salon.entity';
 import { BookingService } from './BookingService.entity';
+import { TreatmentTag } from './TreatmentTag.entity';
 
 @Entity({ name: 'service' })
 export class Service extends BaseEntity {
@@ -39,4 +42,15 @@ export class Service extends BaseEntity {
 
   @OneToMany(() => BookingService, (bookingService) => bookingService.service)
   bookingService!: BookingService[];
+
+  @ManyToMany(
+    () => TreatmentTag,
+    (treatmentTag) => treatmentTag.treatmentTagServices,
+  )
+  @JoinTable({
+    name: 'treatment_tag_service',
+    joinColumn: { name: 'service_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'treatment_tag_id', referencedColumnName: 'id' },
+  })
+  treatment_tags!: TreatmentTag[];
 }

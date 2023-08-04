@@ -36,7 +36,7 @@ const authMiddleware = (
 
     // Verify the token and decode the payload
     const decodedToken = jwt.verify(token, secretKey) as JwtPayload;
-    console.log('decodedToken', decodedToken);
+    // console.log('decodedToken', decodedToken);
 
     req.body.payload = decodedToken; // Store the userId in the custom request object
 

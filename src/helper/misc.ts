@@ -6,16 +6,6 @@ import tryCatchWrapper from '../utils/sentryWrapper';
 import { User } from '../postgres/entity/User.entity';
 import sendResponse from '../utils/sendResponse';
 
-interface checkUserExistss {
-  id: string;
-  email: string;
-  firstname: string;
-  lastname: string;
-  profile_pic_url?: string;
-  type: 'salon_admin' | 'user';
-  password: string;
-}
-
 const isProduction = process.env.NODE_ENV === 'production';
 
 const checkUserExists = async (req: Request, res: Response): Promise<any> => {
