@@ -56,7 +56,7 @@ const searchNearBySalons = async (
         order by
             title_rank desc,
             distance
-        limit 20;
+        limit 5;
         `,
       [lat, lon, searchKeyWord, radius],
     );
@@ -122,6 +122,22 @@ const nearBySalons = async (req: Request, res: Response): Promise<void> => {
             s.temp_inactive,
             s.rating,
             s.rating_count::integer,
+                (case
+                    when now()::time at TIME zone 'IST' <= s.open_from::time
+                    and s.open_from - now()::time between '00:00:00' and 
+                    '01:00:00'
+                    and s.temp_inactive = 0
+                    and s.is_active = 1 then true
+                    else false
+                end) as "openingSoon",
+                    (case
+                    when now()::time at TIME zone 'IST' <= s.open_from::time
+                    and s.open_untill - now()::time between '00:00:00' and 
+                    '01:00:00'
+                    and s.temp_inactive = 0
+                    and s.is_active = 1 then true
+                    else false
+                end) as "closingSoon",
             ST_AsGeoJSON(s.location) AS location,
             ST_Distance(
                 ST_Transform(s.location, 3857),

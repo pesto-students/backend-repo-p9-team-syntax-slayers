@@ -18,6 +18,7 @@ import { Rating } from './Rating.entity';
 import { User } from './User.entity';
 import { City } from './City.entity';
 import { TreatmentTag } from './TreatmentTag.entity';
+import { Cart } from './Cart';
 
 @Entity({ name: 'salon' })
 export class Salon extends BaseEntity {
@@ -103,4 +104,12 @@ export class Salon extends BaseEntity {
     inverseJoinColumn: { name: 'treatment_tag_id', referencedColumnName: 'id' },
   })
   treatment_tags!: TreatmentTag[];
+
+  @ManyToMany(() => Cart, (cart) => cart.services)
+  @JoinTable({
+    name: 'cart_service', // Replace 'cart_service' with the actual join table name
+    joinColumn: { name: 'service_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'cart_id', referencedColumnName: 'id' },
+  })
+  carts!: Cart[];
 }

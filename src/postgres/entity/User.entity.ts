@@ -13,6 +13,7 @@ import { Booking } from './Booking.entity';
 import { Rating } from './Rating.entity';
 import { Bookmarked } from './Bookmarked.entity';
 import { Salon } from './Salon.entity';
+import { Cart } from './Cart';
 
 @Entity({ name: 'user' }) // Set the table name explicitly to 'user'
 export class User extends BaseEntity {
@@ -58,4 +59,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Bookmarked, (bookmarked) => bookmarked.user)
   bookmarkes!: Bookmarked[];
+
+  @OneToMany(() => Cart, (cart) => cart.user)
+  carts!: Cart[];
 }

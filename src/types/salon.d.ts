@@ -16,7 +16,9 @@ export interface Salon {
   gender: 'male' | 'female' | 'unisex';
   temp_inactive: number;
   rating: number;
-  rating_count: number; // Assuming rating_count is represented as a string for consistency
+  rating_count: number;
   location: Location;
   distance: number;
+  openingSoon?: boolean;
+  closingSoon?: boolean;
 }
