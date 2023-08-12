@@ -5,6 +5,7 @@ import { postgresConnection } from '../config/dbConfig';
 
 import { Salon } from '../postgres/entity/Salon.entity';
 import { Salon as ISalon } from '../types/salon';
+import { Service } from '../postgres/entity/Service.entity';
 
 interface sortByTypes {
   type: 'relevance' | 'distance' | 'rating' | 'highToLow' | 'lowToHigh';
@@ -270,4 +271,29 @@ const myFavouriteSalon = async (req: Request, res: Response): Promise<void> => {
   });
 };
 
-export { nearBySalons, searchNearBySalons, salonDetails, myFavouriteSalon };
+const getSalonServices = async (req: Request, res: Response): Promise<void> => {
+  tryCatchWrapper(res, async () => {
+    const { salonId } = req.params;
+
+    const serviceRepository = (await postgresConnection).manager.getRepository(
+      Service,
+    );
+
+    const listOfServices = await serviceRepository.query(
+      `select * from service where salon_id= $1`,
+      [salonId],
+    );
+
+    listOfServices
+      ? sendResponse(res, 200, true, '', listOfServices)
+      : sendResponse(res, 404, false, '');
+  });
+};
+
+export {
+  nearBySalons,
+  searchNearBySalons,
+  salonDetails,
+  myFavouriteSalon,
+  getSalonServices,
+};

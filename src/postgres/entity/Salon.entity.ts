@@ -18,7 +18,7 @@ import { Rating } from './Rating.entity';
 import { User } from './User.entity';
 import { City } from './City.entity';
 import { TreatmentTag } from './TreatmentTag.entity';
-import { Cart } from './Cart';
+import { Cart } from './Cart.entity';
 
 @Entity({ name: 'salon' })
 export class Salon extends BaseEntity {

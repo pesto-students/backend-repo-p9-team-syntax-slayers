@@ -13,7 +13,7 @@ import { Booking } from './Booking.entity';
 import { Rating } from './Rating.entity';
 import { Bookmarked } from './Bookmarked.entity';
 import { Salon } from './Salon.entity';
-import { Cart } from './Cart';
+import { Cart } from './Cart.entity';
 
 @Entity({ name: 'user' }) // Set the table name explicitly to 'user'
 export class User extends BaseEntity {
