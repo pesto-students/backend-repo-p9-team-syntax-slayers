@@ -10,7 +10,7 @@ import authMiddleware from '../middlewares/authMiddleware';
 
 const salonRouter = Router();
 
-salonRouter.get('/nearBySalons', (req: Request, res: Response) => {
+salonRouter.post('/nearBySalons', (req: Request, res: Response) => {
   nearBySalons(req, res);
 });
 

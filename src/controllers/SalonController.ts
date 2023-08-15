@@ -70,11 +70,12 @@ const searchNearBySalons = async (
 
 const nearBySalons = async (req: Request, res: Response): Promise<void> => {
   tryCatchWrapper(res, async () => {
-    const { lon, lat } = req.query;
     const {
       existingSlonIDs,
       sortByType = 'relevance',
       filterByType = 'default',
+      lon,
+      lat,
       count = 20,
     } = req.body;
 
@@ -104,7 +105,7 @@ const nearBySalons = async (req: Request, res: Response): Promise<void> => {
       lowToHigh: ``,
     });
 
-    const radius = 10;
+    const radius = 20;
 
     const filterBy: filterByTypes = filterByClause[filterByType];
     const sortBy: sortByTypes = sortByClause[sortByType];
@@ -119,6 +120,7 @@ const nearBySalons = async (req: Request, res: Response): Promise<void> => {
             s.id,
             s.name,
             s.address,
+            s.banner ->> 0 as banner,
             s.gender,
             s.temp_inactive,
             s.rating,
