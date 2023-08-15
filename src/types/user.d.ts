@@ -45,4 +45,5 @@ export interface basicUser {
   profile_pic_url?: string;
   type: 'salon_admin' | 'user';
   password?: string;
+  token?: string;
 }

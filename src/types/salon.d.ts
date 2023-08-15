@@ -18,7 +18,7 @@ export interface Salon {
   rating: number;
   rating_count: number;
   location: Location;
-  distance: number;
+  distance?: number;
   openingSoon?: boolean;
   closingSoon?: boolean;
 }
