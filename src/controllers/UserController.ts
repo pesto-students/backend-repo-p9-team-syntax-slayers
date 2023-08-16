@@ -160,14 +160,4 @@ const myFavourites = async (req: Request, res: Response): Promise<void> => {
   });
 };
 
-// const myBookings = async (req: Request, res: Response): Promise<void> => {
-//   tryCatchWrapper(res, async () => {
-//     const { password } = req.body;
-
-//     const data = { password };
-//     sendResponse(res, 200, true, 'User Login Successful', data);
-
-//     sendResponse(res, 404, false, 'No User Found With This Email ID');
-//   });
-// };
 export { myBookings, myFavourites, myUpComingBookings };

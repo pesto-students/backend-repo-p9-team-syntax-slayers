@@ -22,3 +22,22 @@ export interface Salon {
   openingSoon?: boolean;
   closingSoon?: boolean;
 }
+
+export interface SalonInput {
+  name: string;
+  address: string;
+  description?: string;
+  contact_number: string;
+  gender: 'male' | 'female' | 'unisex';
+  open_untill: Date;
+  location: Point;
+  open_from: Date;
+  temp_inactive?: number;
+  banner: string[];
+  kyc_completed?: number;
+  is_active?: number;
+  services?: Service[];
+  treatment_tags?: string[];
+  city_id: string;
+  user_id: string;
+}

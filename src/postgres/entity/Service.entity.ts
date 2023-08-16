@@ -30,7 +30,7 @@ export class Service extends BaseEntity {
   @Column({ type: 'int' })
   duration!: number;
 
-  @Column({ type: 'integer', default: 0 })
+  @Column({ type: 'integer', default: 1 })
   is_active!: number;
 
   @Column({ type: 'integer', default: 0 })

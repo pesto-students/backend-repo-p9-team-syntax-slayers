@@ -3,13 +3,15 @@ import 'reflect-metadata'; // Import reflect-metadata shim
 import dotenv from 'dotenv';
 import helmet from 'helmet';
 const cors = require('cors');
+import Razorpay from 'razorpay';
+
 import authRouter from './routes/auth.routes';
 import userRouter from './routes/user.routes';
 import authLimiter from './middlewares/authLimiter';
 import salonRouter from './routes/salon.routes';
 import cartRouter from './routes/cart.routes';
 import paymentRouter from './routes/payment.routes';
-import Razorpay from 'razorpay';
+import salonAdminRouter from './routes/salonAdmin.routes';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -44,6 +46,7 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1', userRouter);
 app.use('/api/v1/salon', salonRouter);
 app.use('/api/v1/cart', cartRouter);
+app.use('/api/v1', salonAdminRouter);
 app.use('/api/v1/payment', paymentRouter);
 
 app.get('/', (req: Request, res: Response) => {
