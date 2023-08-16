@@ -1,14 +1,17 @@
 import { Request, Response } from 'express';
 import tryCatchWrapper from '../utils/sentryWrapper';
 import sendResponse from '../utils/sendResponse';
-import { createSalon, createService } from '../services/SalonAdmin.services';
+import {
+  createSalonService,
+  createServiceService,
+} from '../services/SalonAdmin.services';
 import { SalonInput } from '../types/salon';
 import { CreateService } from '../types/services';
 
 const addSalon = async (req: Request, res: Response): Promise<void> => {
   tryCatchWrapper(res, async () => {
     const salonInput: SalonInput = req.body;
-    const createdSalon = await createSalon(salonInput);
+    const createdSalon = await createSalonService(salonInput);
 
     !!createdSalon
       ? sendResponse(res, 200, true, '', createdSalon)
@@ -20,7 +23,7 @@ const addService = async (req: Request, res: Response): Promise<void> => {
   tryCatchWrapper(res, async () => {
     const serviceInput: CreateService = req.body;
 
-    const createdService = await createService(serviceInput, req);
+    const createdService = await createServiceService(serviceInput, req);
     !!createdService
       ? sendResponse(res, 200, true, '', createdService)
       : sendResponse(res, 404, false);

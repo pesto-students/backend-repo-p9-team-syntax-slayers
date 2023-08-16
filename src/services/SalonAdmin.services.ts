@@ -10,7 +10,7 @@ interface alreadyExists {
   alreadyExists?: boolean;
 }
 
-const createSalon = async (
+const createSalonService = async (
   salonInput: SalonInput,
 ): Promise<SalonInput | alreadyExists> => {
   const salonRepository = (await postgresConnection).manager.getRepository(
@@ -75,7 +75,7 @@ const createSalon = async (
   return savedSalon;
 };
 
-const createService = async (
+const createServiceService = async (
   serviceInput: CreateService,
   req: Request,
 ): Promise<CreateService | alreadyExists | null> => {
@@ -146,4 +146,4 @@ const createService = async (
   }
   return null;
 };
-export { createSalon, createService };
+export { createSalonService, createServiceService };
