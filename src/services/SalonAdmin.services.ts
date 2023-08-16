@@ -78,7 +78,7 @@ const createSalon = async (
 const createService = async (
   serviceInput: CreateService,
   req: Request,
-): Promise<CreateService | alreadyExists | any> => {
+): Promise<CreateService | alreadyExists | null> => {
   const serviceRepository = (await postgresConnection).manager.getRepository(
     Service,
   );
