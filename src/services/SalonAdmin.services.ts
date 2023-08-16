@@ -75,6 +75,66 @@ const createSalonService = async (
   return savedSalon;
 };
 
+const updateSalonService = async (
+  salonInput: SalonInput,
+): Promise<SalonInput | alreadyExists> => {
+  const salonRepository = (await postgresConnection).manager.getRepository(
+    SalonEntity,
+  );
+
+  const newSalon = convertToSalonEntity(salonInput);
+
+  const {
+    name,
+    address,
+    description,
+    contact_number,
+    gender,
+    open_untill,
+    location,
+    open_from,
+    temp_inactive,
+    banner,
+    kyc_completed,
+    treatment_tags,
+    is_active,
+    city_id,
+    user_id,
+  } = newSalon;
+
+  const salonExistsForUser = await salonRepository
+    .createQueryBuilder('s')
+    .select(['s.id'])
+    .where('s.user_id =  :user_id', { user_id: user_id })
+    .getOne();
+
+  if (!salonExistsForUser) {
+    return { alreadyExists: false };
+  }
+
+  await salonRepository.query(
+    `
+    UPDATE public.salon
+    SET 
+        name = '${name}', 
+        address = '${address}', 
+        description = '${description}', 
+        contact_number = '${contact_number}', 
+        gender = '${gender}', 
+        open_untill = '${open_untill}', 
+        location = '${JSON.stringify(location)}', 
+        open_from = '${open_from}', 
+        banner = '${JSON.stringify(banner)}', 
+        city_id = '${city_id}', 
+        temp_inactive = ${temp_inactive}, 
+        kyc_completed = ${kyc_completed}
+    WHERE user_id = '${user_id}'
+    `,
+  );
+
+  return newSalon;
+};
+
 const createServiceService = async (
   serviceInput: CreateService,
   req: Request,
@@ -146,4 +206,26 @@ const createServiceService = async (
   }
   return null;
 };
-export { createSalonService, createServiceService };
+
+const getSalonDetailsByUserIdService = async (userId: string) => {
+  const salonRepository = (await postgresConnection).manager.getRepository(
+    SalonEntity,
+  );
+
+  const salonDetails = await salonRepository.query(
+    `
+     select  "name",address,description, contact_number, gender, banner, city_id from salon where user_id= $1
+   `,
+    [userId],
+  );
+
+  console.log(salonDetails, userId);
+
+  return salonDetails;
+};
+export {
+  createSalonService,
+  createServiceService,
+  getSalonDetailsByUserIdService,
+  updateSalonService,
+};

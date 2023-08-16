@@ -51,6 +51,8 @@ const login = async (req: Request, res: Response): Promise<void> => {
         const data = { token };
 
         sendResponse(res, 200, true, '', data);
+      } else {
+        sendResponse(res, 404, false, 'Incorrect password');
       }
     } else {
       sendResponse(res, 404, false);

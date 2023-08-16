@@ -1,7 +1,12 @@
 import { Response, Router, Request } from 'express';
 import authMiddleware from '../middlewares/authMiddleware';
 
-import { addSalon, addService } from '../controllers/SalonAdminController';
+import {
+  addSalon,
+  addService,
+  getSalonDetailsByUserId,
+  updateSalon,
+} from '../controllers/SalonAdminController';
 import {
   validateSalonCreate,
   validateServiceInput,
@@ -17,6 +22,10 @@ salonAdminRouter.post(
   },
 );
 
+salonAdminRouter.put('/updateSalon', (req: Request, res: Response) => {
+  updateSalon(req, res);
+});
+
 salonAdminRouter.post(
   '/addService',
   authMiddleware,
@@ -26,4 +35,12 @@ salonAdminRouter.post(
   },
 );
 
+salonAdminRouter.get(
+  '/getSalonDetails/:userId',
+  authMiddleware,
+  (req: Request, res: Response) => {
+    console.log('yoooo');
+    getSalonDetailsByUserId(req, res);
+  },
+);
 export default salonAdminRouter;
