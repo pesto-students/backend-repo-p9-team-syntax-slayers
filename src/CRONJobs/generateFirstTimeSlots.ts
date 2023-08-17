@@ -26,13 +26,15 @@ const generateTimeSlotsForSalons = async (res: Response): Promise<void> => {
         const openFromParts = salon.open_from.toString().split(':');
         const openUntilParts = salon.open_untill.toString().split(':');
 
-        currentDate.setHours(
+        generatedDate.setDate(currentDate.getDate() + day); // Set the date of the current day
+
+        generatedDate.setHours(
           parseInt(openFromParts[0]),
           parseInt(openFromParts[1]),
           0,
           0,
         );
-        const endTime = new Date(currentDate);
+        const endTime = new Date(generatedDate);
         endTime.setHours(
           parseInt(openUntilParts[0]),
           parseInt(openUntilParts[1]),
@@ -40,30 +42,21 @@ const generateTimeSlotsForSalons = async (res: Response): Promise<void> => {
           0,
         );
 
-        while (currentDate < endTime) {
-          const startTime = new Date(currentDate);
+        while (generatedDate < endTime) {
+          const startTime = new Date(generatedDate);
           const endTime = new Date(startTime.getTime() + 30 * 60 * 1000); // Add 30 minutes
-
-          // const timeSlot = new TimeSlots();
-          // timeSlot.start_time = startTime;
-          // timeSlot.end_time = endTime;
-          // timeSlot.date = generatedDate; // Use the generatedDate here
-          // timeSlot.salon_id = salon.id;
 
           await timeSlotsRepository.query(
             `
-        INSERT INTO public.time_slot
-          ( id, salon_id, start_time, end_time, "date")
-          VALUES( uuid_generate_v4(), $1, $2, $3, $4);
-        `,
-            [salon.id, startTime, endTime, generatedDate], // Use generatedDate here as well
+      INSERT INTO public.time_slot
+        ( id, salon_id, start_time, end_time, "date")
+        VALUES( uuid_generate_v4(), $1, $2, $3, $4);
+      `,
+            [salon.id, startTime, endTime, generatedDate],
           );
 
-          currentDate.setTime(currentDate.getTime() + 30 * 60 * 1000); // Move to the next time slot
+          generatedDate.setTime(generatedDate.getTime() + 30 * 60 * 1000); // Move to the next time slot
         }
-
-        // Increment the generatedDate by one day for the next iteration
-        generatedDate.setDate(generatedDate.getDate() + 1);
       }
     }
 
