@@ -1,13 +1,10 @@
 import { Request, Response } from 'express';
 import tryCatchWrapper from '../utils/sentryWrapper';
 import sendResponse from '../utils/sendResponse';
-import { postgresConnection } from '../config/dbConfig';
 
-import { Salon } from '../postgres/entity/Salon.entity';
-import { Salon as ISalon } from '../types/salon';
-import { Service } from '../postgres/entity/Service.entity';
 import {
   getSalonServicesService,
+  getSalonSlotsService,
   myFavouriteSalonService,
   nearBySalonsService,
   salonDetailsService,
@@ -67,10 +64,21 @@ const getSalonServices = async (req: Request, res: Response): Promise<void> => {
   });
 };
 
+const salonTimeSlots = async (req: Request, res: Response): Promise<void> => {
+  tryCatchWrapper(res, async () => {
+    const salonTimeSlots = await getSalonSlotsService(req);
+
+    salonTimeSlots
+      ? sendResponse(res, 200, true, '', salonTimeSlots)
+      : sendResponse(res, 404, false, '');
+  });
+};
+
 export {
   nearBySalons,
   searchNearBySalons,
   salonDetails,
   myFavouriteSalon,
   getSalonServices,
+  salonTimeSlots,
 };

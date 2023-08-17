@@ -5,6 +5,7 @@ import {
   salonDetails,
   searchNearBySalons,
   getSalonServices,
+  salonTimeSlots,
 } from '../controllers/SalonController';
 import authMiddleware from '../middlewares/authMiddleware';
 
@@ -33,5 +34,13 @@ salonRouter.get(
 salonRouter.get('/services/:salonId', (req: Request, res: Response) => {
   getSalonServices(req, res);
 });
+
+salonRouter.get(
+  '/:salonId/timeslots',
+  authMiddleware,
+  (req: Request, res: Response) => {
+    salonTimeSlots(req, res);
+  },
+);
 
 export default salonRouter;
