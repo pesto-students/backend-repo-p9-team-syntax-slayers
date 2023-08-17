@@ -36,7 +36,7 @@ salonRouter.get('/services/:salonId', (req: Request, res: Response) => {
 });
 
 salonRouter.get(
-  '/:salonId/timeslots',
+  '/timeslots/:salonId',
   authMiddleware,
   (req: Request, res: Response) => {
     salonTimeSlots(req, res);
