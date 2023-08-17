@@ -6,6 +6,7 @@ import {
   addService,
   getSalonDetailsByUserId,
   updateSalon,
+  updateService,
 } from '../controllers/SalonAdminController';
 import {
   validateSalonCreate,
@@ -32,6 +33,15 @@ salonAdminRouter.post(
   validateServiceInput,
   (req: Request, res: Response) => {
     addService(req, res);
+  },
+);
+salonAdminRouter.put(
+  '/updateService',
+  authMiddleware,
+  validateServiceInput,
+  (req: Request, res: Response) => {
+    console.log(req, 'aaa');
+    updateService(req, res);
   },
 );
 

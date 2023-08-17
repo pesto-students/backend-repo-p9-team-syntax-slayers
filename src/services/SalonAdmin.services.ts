@@ -207,6 +207,61 @@ const createServiceService = async (
   return null;
 };
 
+const updateServiceService = async (
+  serviceInput: CreateService,
+  req: Request,
+): Promise<CreateService | alreadyExists | null> => {
+  const serviceRepository = (await postgresConnection).manager.getRepository(
+    Service,
+  );
+  const salonRepository = (await postgresConnection).manager.getRepository(
+    Salon,
+  );
+
+  const { name, description, price, duration, featured, salon_id } =
+    serviceInput;
+  console.log(salon_id, 'salonid');
+  const { payload } = req.body;
+  const { userId, userType } = payload;
+
+  if (userType === 'salon_admin') {
+    const isSalonAdmin = await salonRepository
+      .createQueryBuilder('s')
+      .select(['s.id'])
+      .where('s.id = :salon_id', { salon_id: salon_id })
+      .andWhere('s.user_id = :user_id', { user_id: userId });
+
+    if (isSalonAdmin) {
+      const serviceExistsForSalon = await serviceRepository
+        .createQueryBuilder('s')
+        .select(['s.id'])
+        .where('s.name =  :name', { name: name })
+        .andWhere('s.salon_id = :salon_id', { salon_id: salon_id })
+        .getOne();
+
+      if (!serviceExistsForSalon) {
+        return { alreadyExists: false };
+      }
+
+      const [savedService] = await (
+        await postgresConnection
+      ).manager.query(
+        `
+      UPDATE public.service
+      ( id, "name", description, price, duration, featured, salon_id)
+      VALUES( uuid_generate_v4(), $1, $2, $3, $4,  $5, $6)
+      RETURNING *
+    `,
+        [name, description, price, duration, featured, salon_id],
+      );
+
+      console.log(savedService, 'savedService');
+      return savedService;
+    }
+  }
+  return null;
+};
+
 const getSalonDetailsByUserIdService = async (userId: string) => {
   const salonRepository = (await postgresConnection).manager.getRepository(
     SalonEntity,
@@ -214,7 +269,7 @@ const getSalonDetailsByUserIdService = async (userId: string) => {
 
   const salonDetails = await salonRepository.query(
     `
-     select  "name",address,description, contact_number, gender, banner, city_id from salon where user_id= $1
+     select  "name",id,address,description, contact_number, gender, banner, city_id from salon where user_id= $1
    `,
     [userId],
   );
@@ -228,4 +283,5 @@ export {
   createServiceService,
   getSalonDetailsByUserIdService,
   updateSalonService,
+  updateServiceService,
 };

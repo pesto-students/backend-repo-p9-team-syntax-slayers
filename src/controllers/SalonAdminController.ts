@@ -6,6 +6,7 @@ import {
   createServiceService,
   getSalonDetailsByUserIdService,
   updateSalonService,
+  updateServiceService,
 } from '../services/SalonAdmin.services';
 import { SalonInput } from '../types/salon';
 import { CreateService } from '../types/services';
@@ -31,10 +32,21 @@ const updateSalon = async (req: Request, res: Response): Promise<void> => {
   });
 };
 
-const addService = async (req: Request, res: Response): Promise<void> => {
+const updateService = async (req: Request, res: Response): Promise<void> => {
   tryCatchWrapper(res, async () => {
     const serviceInput: CreateService = req.body;
 
+    const createdService = await updateServiceService(serviceInput, req);
+    !!createdService
+      ? sendResponse(res, 200, true, '', createdService)
+      : sendResponse(res, 404, false);
+  });
+};
+
+const addService = async (req: Request, res: Response): Promise<void> => {
+  tryCatchWrapper(res, async () => {
+    const serviceInput: CreateService = req.body;
+    console.log(req);
     const createdService = await createServiceService(serviceInput, req);
     !!createdService
       ? sendResponse(res, 200, true, '', createdService)
@@ -55,4 +67,10 @@ const getSalonDetailsByUserId = async (
       : sendResponse(res, 404, false);
   });
 };
-export { addSalon, addService, getSalonDetailsByUserId, updateSalon };
+export {
+  addSalon,
+  addService,
+  getSalonDetailsByUserId,
+  updateSalon,
+  updateService,
+};
