@@ -37,7 +37,7 @@ const myFavourites = async (req: Request, res: Response): Promise<void> => {
     console.log('myFavSalons', myFavSalons);
     !!myFavSalons && !!myFavSalons.length
       ? sendResponse(res, 200, true, '', myFavSalons)
-      : sendResponse(res, 404, false, '');
+      : sendResponse(res, 200, false, 'No favourite list found');
   });
 };
 

@@ -10,7 +10,6 @@ const addToCart = async (req: Request, res: Response): Promise<void> => {
     const { salonId, userId, serviceId } = payload;
 
     const manager = (await postgresConnection).manager;
-
     let cart = await manager.query(`select * from cart where "userId" = $1`, [
       userId,
     ]);
@@ -71,6 +70,19 @@ const removeFromCart = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    let cartServices = await manager.query(
+      `
+      SELECT * FROM "cart_services_service" WHERE "cartId" = $1
+    `,
+      [cart[0].id],
+    );
+
+    if (cartServices.length === 1) {
+      await manager.query(`DELETE from cart where "userId"=$1`, [userId]);
+
+      sendResponse(res, 200, true, 'Cart cleared');
+      return;
+    }
     // Delete the service from the cart
     await manager.query(
       `

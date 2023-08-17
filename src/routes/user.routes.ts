@@ -10,7 +10,7 @@ import {
 const userRouter = Router();
 
 userRouter.get(
-  '/profile/:userId/myBookings',
+  '/profile/myBookings/:userId',
   authMiddleware,
   (req: Request, res: Response) => {
     myBookings(req, res);
@@ -18,7 +18,7 @@ userRouter.get(
 );
 
 userRouter.get(
-  '/profile/:userId/myUpComingBookings',
+  '/profile/myUpComingBookings/:userId',
   authMiddleware,
   (req: Request, res: Response) => {
     myUpComingBookings(req, res);
@@ -26,7 +26,7 @@ userRouter.get(
 );
 
 userRouter.get(
-  '/profile/:userId/myFavourites',
+  '/profile/myFavourites/:userId',
   authMiddleware,
   (req: Request, res: Response) => {
     myFavourites(req, res);
