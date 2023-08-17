@@ -16,8 +16,8 @@ export class Booking extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ type: 'integer', nullable: false })
-  order_id!: number;
+  @Column({ type: 'varchar', nullable: true })
+  order_id!: string;
 
   @ManyToOne(() => User, (user) => user.bookings)
   @JoinColumn({ name: 'user_id' })

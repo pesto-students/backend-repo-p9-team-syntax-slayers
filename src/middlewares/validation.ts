@@ -1,5 +1,6 @@
 import Joi from 'joi';
 import { Request, Response, NextFunction } from 'express';
+import { AddRating } from '../types/ratinf';
 
 export const registerSchema = Joi.object({
   firstname: Joi.string().required(),
@@ -43,6 +44,26 @@ export const serviceCreateSchema = Joi.object({
   treatment_tags: Joi.array().required(),
   payload: Joi.any().required(),
 });
+
+export const addRatingSchema = Joi.object<AddRating>({
+  rating: Joi.number().required(),
+  feedback: Joi.string().required(),
+  salon_id: Joi.string().uuid().required(),
+  user_id: Joi.string().uuid().required(),
+});
+
+export const validateAddRating = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void => {
+  const { error } = addRatingSchema.validate(req.body);
+  if (error) {
+    res.status(400).json({ error: error.details[0].message });
+    return;
+  }
+  next();
+};
 
 export const validateRegister = (
   req: Request,

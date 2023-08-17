@@ -27,7 +27,7 @@ const myBookingsCommonQuery = async ({ state, userID }: bookingState) => {
           s."name" as "salonName",
           s.address as "salonAddress",
           s.banner ->> 0 as banner,
-          b.start_time at TIME zone 'IST' as "startTime",
+           to_char(b.start_time AT TIME ZONE 'IST', 'DDth Mon HH:MI AM') AS "startTime",
           (
           select
             jsonb_agg("bookedService")
