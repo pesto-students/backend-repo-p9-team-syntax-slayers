@@ -12,6 +12,7 @@ import salonRouter from './routes/salon.routes';
 import cartRouter from './routes/cart.routes';
 import paymentRouter from './routes/payment.routes';
 import salonAdminRouter from './routes/salonAdmin.routes';
+import cronRouter from './routes/cron.routes';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -48,6 +49,7 @@ app.use('/api/v1/salon', salonRouter);
 app.use('/api/v1/cart', cartRouter);
 app.use('/api/v1', salonAdminRouter);
 app.use('/api/v1/payment', paymentRouter);
+app.use('/api/v1/cron', cronRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, world!');

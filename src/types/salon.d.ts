@@ -10,6 +10,7 @@ export interface Location {
 }
 
 export interface Salon {
+  open_untill?: Date;
   id: string;
   name: string;
   address: string;
@@ -20,6 +21,8 @@ export interface Salon {
   location: Location;
   distance?: number;
   openingSoon?: boolean;
+  open_from?: Date | undefined;
+  open_untill?: Date | undefined;
   closingSoon?: boolean;
 }
 

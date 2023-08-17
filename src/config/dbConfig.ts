@@ -4,7 +4,6 @@ import * as redis from 'redis';
 import 'reflect-metadata';
 import { DataSource, EntityTarget, ObjectLiteral, Repository } from 'typeorm';
 import dotenv from 'dotenv';
-import { User } from '../postgres/entity/User.entity';
 
 dotenv.config();
 
