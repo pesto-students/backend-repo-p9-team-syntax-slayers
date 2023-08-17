@@ -65,7 +65,6 @@ const generateTimeSlotsForSalons = async (res: Response): Promise<void> => {
         SELECT id, open_untill::text,  open_from::text
         FROM salon
         where is_active = 1 and kyc_completed = 1
-        limit 1
     `,
     );
 

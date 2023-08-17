@@ -13,8 +13,8 @@ import { BookingService } from './BookingService.entity';
 
 @Entity({ name: 'booking', schema: 'public' })
 export class Booking extends BaseEntity {
-  @PrimaryGeneratedColumn('increment')
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @Column({ type: 'integer', nullable: false })
   order_id!: number;
