@@ -27,13 +27,13 @@ const generateTimeSlotsForSalons = async (res: Response): Promise<void> => {
         const openUntilParts = salon.open_untill.toString().split(':');
 
         generatedDate.setDate(currentDate.getDate() + day); // Set the date of the current day
-
         generatedDate.setHours(
           parseInt(openFromParts[0]),
           parseInt(openFromParts[1]),
           0,
           0,
         );
+
         const endTime = new Date(generatedDate);
         endTime.setHours(
           parseInt(openUntilParts[0]),
@@ -46,13 +46,24 @@ const generateTimeSlotsForSalons = async (res: Response): Promise<void> => {
           const startTime = new Date(generatedDate);
           const endTime = new Date(startTime.getTime() + 30 * 60 * 1000); // Add 30 minutes
 
+          // Convert the start time, end time, and date to IST
+          const startTimeIST = new Date(
+            startTime.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }),
+          );
+          const endTimeIST = new Date(
+            endTime.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }),
+          );
+          const dateIST = new Date(
+            generatedDate.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }),
+          );
+
           await timeSlotsRepository.query(
             `
-      INSERT INTO public.time_slot
+        INSERT INTO public.time_slot
         ( id, salon_id, start_time, end_time, "date")
         VALUES( uuid_generate_v4(), $1, $2, $3, $4);
       `,
-            [salon.id, startTime, endTime, generatedDate],
+            [salon.id, startTimeIST, endTimeIST, dateIST],
           );
 
           generatedDate.setTime(generatedDate.getTime() + 30 * 60 * 1000); // Move to the next time slot
