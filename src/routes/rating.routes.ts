@@ -14,7 +14,7 @@ ratingRouter.post(
   },
 );
 
-ratingRouter.post('/salon/:salonid/ratings', (req: Request, res: Response) => {
+ratingRouter.get('/salon/:salonid/ratings', (req: Request, res: Response) => {
   salonRatings(req, res);
 });
 

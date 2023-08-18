@@ -6,6 +6,7 @@ import { validateLogin, validateRegister } from '../middlewares/validation';
 const authRouter = Router();
 
 authRouter.post('/login', validateLogin, (req: Request, res: Response) => {
+  console.log('##req', req);
   login(req, res);
 });
 

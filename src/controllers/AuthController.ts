@@ -22,16 +22,16 @@ const login = async (req: Request, res: Response): Promise<void> => {
 
     const userExists: basicUser = await checkUserExists(req, res);
 
-    const {
-      id,
-      type,
-      firstname,
-      email,
-      password: hashedPassword,
-      profile_pic_url,
-    } = userExists;
+    if (userExists) {
+      const {
+        id,
+        type,
+        firstname,
+        email,
+        password: hashedPassword,
+        profile_pic_url,
+      } = userExists;
 
-    if (!!userExists && hashedPassword && password) {
       const passMatched = await comparePassword(
         password,
         hashedPassword ? hashedPassword : '',
@@ -51,12 +51,9 @@ const login = async (req: Request, res: Response): Promise<void> => {
         const data = { token };
 
         sendResponse(res, 200, true, '', data);
-      } else {
-        sendResponse(res, 404, false, 'Incorrect password');
-      }
-    } else {
-      sendResponse(res, 404, false);
+      } else sendResponse(res, 404, false, 'Incorrect password');
     }
+    sendResponse(res, 404, false, 'User Not Found');
   });
 };
 

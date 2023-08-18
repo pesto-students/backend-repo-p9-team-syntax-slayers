@@ -29,7 +29,9 @@ const checkUserExists = async (req: Request, res: Response): Promise<any> => {
       .where('u.email = :email', { email: email })
       .getOne();
 
-    return userExists;
+    if (userExists) {
+      return userExists;
+    } else return null;
   } catch (error) {
     if (isProduction) {
       Sentry.captureException(error);

@@ -49,7 +49,7 @@ export const addRatingSchema = Joi.object<AddRating>({
   rating: Joi.number().required(),
   feedback: Joi.string().required(),
   salon_id: Joi.string().uuid().required(),
-  user_id: Joi.string().uuid().required(),
+  payload: Joi.any().required(),
 });
 
 export const validateAddRating = (
