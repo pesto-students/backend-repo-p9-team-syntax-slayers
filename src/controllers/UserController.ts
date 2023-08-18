@@ -6,6 +6,7 @@ import {
   myBookingsService,
   myFavouritesService,
   myUpComingBookingsService,
+  BookServiceService,
 } from '../services/User.services';
 
 const myBookings = async (req: Request, res: Response): Promise<void> => {
@@ -41,4 +42,10 @@ const myFavourites = async (req: Request, res: Response): Promise<void> => {
   });
 };
 
-export { myBookings, myFavourites, myUpComingBookings };
+const BookService = async (req: Request, res: Response): Promise<void> => {
+  tryCatchWrapper(res, async () => {
+    const bookingStatus = await BookServiceService(req);
+  });
+};
+
+export { myBookings, myFavourites, myUpComingBookings, BookService };

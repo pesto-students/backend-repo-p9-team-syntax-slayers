@@ -4,6 +4,9 @@ import { connectToPostgres, postgresConnection } from '../config/dbConfig';
 import { User } from '../postgres/entity/User.entity';
 import { Bookmarked } from '../postgres/entity/Bookmarked.entity';
 import { BookingData, MyFavSalonData } from '../types/user';
+import { Booking } from '../postgres/entity/Booking.entity';
+import { BookingService } from '../postgres/entity/BookingService.entity';
+import { TimeSlots } from '../postgres/entity/TimeSlot.entity';
 
 interface bookingState {
   state: 'past' | 'upcoming';
@@ -142,4 +145,52 @@ const myFavouritesService = async (req: Request): Promise<MyFavSalonData[]> => {
   return myFavSalons;
 };
 
-export { myBookingsService, myUpComingBookingsService, myFavouritesService };
+const BookServiceService = async (req: Request) => {
+  const { orderId, userId, salonId, serviceIds, finalDates } = req.body;
+
+  const { day, month, slots } = finalDates;
+
+  const booking = new Booking();
+  booking.order_id = orderId;
+  booking.user = userId;
+  booking.salon = salonId;
+  booking.start_time = slots[0].slot;
+  booking.end_time = slots[slots.length - 1].slot;
+
+  const bookRepository = (await postgresConnection).manager.getRepository(
+    Booking,
+  );
+  await bookRepository.save(booking);
+
+  const bookingServiceRepository = (
+    await postgresConnection
+  ).manager.getRepository(BookingService);
+
+  for (const serviceId of serviceIds) {
+    const bookingService = new BookingService();
+    bookingService.booking = booking;
+    await bookingServiceRepository.save(bookingService);
+  }
+
+  // for (let slot in slots){
+  //        const timeSlot = new TimeSlots();
+  //        timeSlot.salon_id = salonId;
+  //        timeSlot.booking_id = booking.id;
+  //        timeSlot.date = new Date(day);
+  //        timeSlot.start_time = startTime;
+  //        timeSlot.end_time = endTime;
+
+  //        const timeSlotRepository = (
+  //          await postgresConnection
+  //        ).manager.getRepository(TimeSlots);
+  //        await timeSlotRepository.save(timeSlot);
+  // }
+
+  return booking;
+};
+export {
+  myBookingsService,
+  myUpComingBookingsService,
+  myFavouritesService,
+  BookServiceService,
+};

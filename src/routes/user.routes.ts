@@ -5,9 +5,19 @@ import {
   myBookings,
   myFavourites,
   myUpComingBookings,
+  BookService,
 } from '../controllers/UserController';
+import { BookingService } from '../postgres/entity/BookingService.entity';
 
 const userRouter = Router();
+
+userRouter.post(
+  '/profile/bookService/:userId',
+  authMiddleware,
+  (req: Request, res: Response) => {
+    BookService(req, res);
+  },
+);
 
 userRouter.get(
   '/profile/myBookings/:userId',
