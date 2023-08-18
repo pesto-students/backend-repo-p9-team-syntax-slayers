@@ -61,7 +61,7 @@ const searchNearBySalonsService = async (
   return nearBySalons;
 };
 
-const nearBySalonsService = async (req: Request): Promise<Salon[] | null> => {
+const nearBySalonsService = async (req: Request): Promise<any> => {
   const {
     existingSlonIDs,
     sortByType = 'relevance',
@@ -106,6 +106,25 @@ const nearBySalonsService = async (req: Request): Promise<Salon[] | null> => {
     SalonEntity,
   );
 
+  const nearBySalonsCount: number = await salonRepository.query(
+    `
+            SELECT
+            count(s.id) 
+            FROM
+            salon s
+            WHERE
+            ST_Distance(
+                ST_Transform(s.location, 3857),
+                ST_Transform(ST_SetSRID(ST_MakePoint($1, $2), 4326), 3857)
+            ) <= $3 * 1000
+            -- Multiply radius_in_kilometers by 1000 to convert to meters
+            AND s.is_active = 1
+            AND s.kyc_completed = 1
+            ${filterBy}
+        
+        `,
+    [lat, lon, radius],
+  );
   const nearBySalons: Salon[] = await salonRepository.query(
     `
             SELECT
@@ -118,7 +137,7 @@ const nearBySalonsService = async (req: Request): Promise<Salon[] | null> => {
             s.rating,
             s.rating_count::integer,
                 (case
-                    when now()::time at TIME zone 'IST' <= s.open_from::time
+                    when now()::time   <= s.open_from::time
                     and s.open_from - now()::time between '00:00:00' and 
                     '01:00:00'
                     and s.temp_inactive = 0
@@ -126,7 +145,7 @@ const nearBySalonsService = async (req: Request): Promise<Salon[] | null> => {
                     else false
                 end) as "openingSoon",
                     (case
-                    when now()::time at TIME zone 'IST' <= s.open_from::time
+                    when now()::time   <= s.open_from::time
                     and s.open_untill - now()::time between '00:00:00' and 
                     '01:00:00'
                     and s.temp_inactive = 0
@@ -157,7 +176,7 @@ const nearBySalonsService = async (req: Request): Promise<Salon[] | null> => {
     [lat, lon, radius, existingSlonIDs, count],
   );
 
-  return nearBySalons;
+  return { nearBySalons, nearBySalonsCount };
 };
 
 const salonDetailsService = async (req: Request): Promise<Salon | null> => {

@@ -53,7 +53,7 @@ const getRatingService = async (req: Request): Promise<any> => {
                     u.profile_pic_url as "profilePicURL",
                     max(r2.rating) as "rating",
                     max(r2.feedback) as "feedback",
-                    TO_CHAR(r2.created_at AT TIME zone 'IST', 'DDth Mon HH:MI AM') as "createdAT"
+                    TO_CHAR(r2.created_at  , 'DDth Mon HH:MI AM') as "createdAT"
                 FROM rating r2
             INNER JOIN "user" u ON u.id = r2.user_id
             WHERE r2.salon_id =  r.salon_id

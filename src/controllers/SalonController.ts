@@ -29,7 +29,7 @@ const nearBySalons = async (req: Request, res: Response): Promise<void> => {
     const nearBySalons = await nearBySalonsService(req);
 
     nearBySalons
-      ? sendResponse(res, 200, true, '', nearBySalons)
+      ? sendResponse(res, 200, true, '', { nearBySalons })
       : sendResponse(res, 404, false, '');
   });
 };

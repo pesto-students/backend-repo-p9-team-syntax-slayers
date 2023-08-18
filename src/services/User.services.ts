@@ -26,8 +26,8 @@ interface Slots {
 }
 
 const bookingStates = Object.freeze({
-  past: `and b.start_time at TIME zone 'IST' <= now() at TIME zone 'IST'`,
-  upcoming: `and b.start_time at TIME zone 'IST' >= now() at TIME zone 'IST'`,
+  past: `and b.start_time   <= now()  `,
+  upcoming: `and b.start_time   >= now()  `,
 });
 
 const myBookingsCommonQuery = async ({ state, userID }: bookingState) => {
@@ -42,7 +42,7 @@ const myBookingsCommonQuery = async ({ state, userID }: bookingState) => {
           s."name" as "salonName",
           s.address as "salonAddress",
           s.banner ->> 0 as banner,
-           to_char(b.start_time AT TIME ZONE 'IST', 'DDth Mon HH:MI AM') AS "startTime",
+           to_char(b.start_time  , 'DDth Mon HH:MI AM') AS "startTime",
           (
           select
             jsonb_agg("bookedService")
@@ -178,8 +178,8 @@ const myFavouritesService = async (req: Request): Promise<MyFavSalonData[]> => {
       select
         s."name" as "salonName",
         s.address as "salonAddress",
-        s.open_from at TIME zone 'IST' as "openFrom",
-        s.open_untill at TIME zone 'IST' as "openTill",
+        s.open_from   as "openFrom",
+        s.open_untill   as "openTill",
         s.banner -> 0 as "banner",
         s.temp_inactive as "currentlyInactive",
         s.rating ,
