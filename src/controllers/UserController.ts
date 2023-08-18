@@ -67,6 +67,10 @@ const myFavourites = async (req: Request, res: Response): Promise<void> => {
 const BookService = async (req: Request, res: Response): Promise<void> => {
   tryCatchWrapper(res, async () => {
     const bookingStatus = await BookServiceService(req);
+
+    !!bookingStatus
+      ? sendResponse(res, 200, true, '')
+      : sendResponse(res, 400, false, '');
   });
 };
 

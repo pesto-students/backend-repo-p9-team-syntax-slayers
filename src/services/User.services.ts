@@ -13,6 +13,18 @@ interface bookingState {
   userID: string;
 }
 
+interface Slot {
+  slot: Date | string;
+  slotId: string;
+  avaliableForBooking: boolean;
+  startTimeSLot: Date;
+  endTimeSlot: Date;
+}
+
+interface Slots {
+  slots: Slot[];
+}
+
 const bookingStates = Object.freeze({
   past: `and b.start_time at TIME zone 'IST' <= now() at TIME zone 'IST'`,
   upcoming: `and b.start_time at TIME zone 'IST' >= now() at TIME zone 'IST'`,
@@ -193,45 +205,75 @@ const myFavouritesService = async (req: Request): Promise<MyFavSalonData[]> => {
 const BookServiceService = async (req: Request) => {
   const { orderId, userId, salonId, serviceIds, finalDates } = req.body;
 
-  const { day, month, slots } = finalDates;
+  const { slots }: Slots = finalDates;
 
-  const booking = new Booking();
-  booking.order_id = orderId;
-  booking.user = userId;
-  booking.salon = salonId;
-  booking.start_time = slots[0].slot;
-  booking.end_time = slots[slots.length - 1].slot;
+  let startTimeSLotOfFirst = null;
+  let endTimeSlotOfLast = null;
 
-  const bookRepository = (await postgresConnection).manager.getRepository(
-    Booking,
-  );
-  await bookRepository.save(booking);
-
-  const bookingServiceRepository = (
-    await postgresConnection
-  ).manager.getRepository(BookingService);
-
-  for (const serviceId of serviceIds) {
-    const bookingService = new BookingService();
-    bookingService.booking = booking;
-    await bookingServiceRepository.save(bookingService);
+  if (slots?.length > 1) {
+    startTimeSLotOfFirst = slots[0]?.startTimeSLot;
+    endTimeSlotOfLast = slots[slots.length - 1]?.endTimeSlot;
   }
 
-  // for (let slot in slots){
-  //        const timeSlot = new TimeSlots();
-  //        timeSlot.salon_id = salonId;
-  //        timeSlot.booking_id = booking.id;
-  //        timeSlot.date = new Date(day);
-  //        timeSlot.start_time = startTime;
-  //        timeSlot.end_time = endTime;
+  if (slots?.length === 1) {
+    startTimeSLotOfFirst = slots[0]?.startTimeSLot;
+    endTimeSlotOfLast = slots[0]?.endTimeSlot;
+  }
 
-  //        const timeSlotRepository = (
-  //          await postgresConnection
-  //        ).manager.getRepository(TimeSlots);
-  //        await timeSlotRepository.save(timeSlot);
-  // }
+  const bookingRepository = (await postgresConnection).manager.getRepository(
+    Booking,
+  );
 
-  return booking;
+  const [bookingResp] = await bookingRepository.query(
+    `
+    INSERT INTO public.booking
+    (created_at, updated_at, order_id, start_time, end_time, user_id, salon_id, id)
+    VALUES(now(), now(), uuid_generate_v4(), $1, $2, $3, $4, uuid_generate_v4())
+    RETURNING *
+  `,
+    [startTimeSLotOfFirst, endTimeSlotOfLast, userId, salonId],
+  );
+  console.log('bookingResp', bookingResp);
+  if (bookingResp) {
+    const bookingServiceRepository = (
+      await postgresConnection
+    ).manager.getRepository(BookingService);
+
+    for (const serviceId of serviceIds) {
+      await bookingServiceRepository.query(
+        `
+      INSERT INTO public.booking_service
+      (created_at, updated_at, id, service_id, booking_id)
+      VALUES(now(), now(), uuid_generate_v4(), $1, $2);
+    `,
+        [serviceId, bookingResp.id],
+      );
+    }
+
+    const timeSlotRepository = (await postgresConnection).manager.getRepository(
+      TimeSlots,
+    );
+
+    for (let slot of slots) {
+      await timeSlotRepository.query(
+        `
+        UPDATE public.time_slot
+        SET salon_id=$5, start_time=$2, end_time=$3, 
+        booking_id= $4
+        WHERE id= $1
+        `,
+        [
+          slot.slotId,
+          slot.startTimeSLot,
+          slot.endTimeSlot,
+          bookingResp.id,
+          salonId,
+        ],
+      );
+    }
+
+    return bookingResp;
+  }
 };
 export {
   myBookingsService,

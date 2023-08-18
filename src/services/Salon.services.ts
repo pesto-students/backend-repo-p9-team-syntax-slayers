@@ -279,22 +279,22 @@ const getSalonSlotsService = async (req: Request): Promise<Salon | null> => {
   const timeSlots = await timeSlotsRepository.query(
     `
     SELECT
-      TO_CHAR(ts."date" AT TIME ZONE 'IST', 'Mon') AS month,
-      EXTRACT(DAY FROM ts."date" AT TIME ZONE 'IST') || CASE WHEN EXTRACT(DAY FROM ts."date" AT TIME ZONE 'IST') % 10 = 1 AND EXTRACT(DAY FROM ts."date" AT TIME ZONE 'IST') != 11 THEN 'st'
-          WHEN EXTRACT(DAY FROM ts."date" AT TIME ZONE 'IST') % 10 = 2 AND EXTRACT(DAY FROM ts."date" AT TIME ZONE 'IST') != 12 THEN 'nd'
-          WHEN EXTRACT(DAY FROM ts."date" AT TIME ZONE 'IST') % 10 = 3 AND EXTRACT(DAY FROM ts."date" AT TIME ZONE 'IST') != 13 THEN 'rd'
+      TO_CHAR(ts."date" , 'Mon') AS month,
+      EXTRACT(DAY FROM ts."date" ) || CASE WHEN EXTRACT(DAY FROM ts."date" ) % 10 = 1 AND EXTRACT(DAY FROM ts."date" ) != 11 THEN 'st'
+          WHEN EXTRACT(DAY FROM ts."date" ) % 10 = 2 AND EXTRACT(DAY FROM ts."date" ) != 12 THEN 'nd'
+          WHEN EXTRACT(DAY FROM ts."date" ) % 10 = 3 AND EXTRACT(DAY FROM ts."date" ) != 13 THEN 'rd'
           ELSE 'th' END AS day,
-      TO_CHAR(ts."date" AT TIME ZONE 'IST', 'Dy') AS week,
-      json_agg(json_build_object('slot', TO_CHAR(ts.start_time AT TIME ZONE 'IST', 'HH:MI AM'), 'slotId', ts.id, 'avaliableForBooking', (case when ts.booking_id is null then true else false end) )) as slots
+      TO_CHAR(ts."date" , 'Dy') AS week,
+      json_agg(json_build_object('slot', TO_CHAR(ts.start_time , 'HH:MI AM'), 'slotId', ts.id, 'avaliableForBooking', (case when ts.booking_id is null then true else false end), 'startTimeSLot',ts.start_time , 'endTimeSlot', ts.end_time  )) as slots
     FROM
       public.time_slot ts
     WHERE
       ts.salon_id = $1
-      and ts."date"::date AT TIME ZONE 'IST' >= current_date
+      and ts."date"::date  >= current_date
     GROUP BY
-      month, day, week, ts."date" AT TIME ZONE 'IST'
+      month, day, week, ts."date" 
     ORDER BY
-      ts."date" AT TIME ZONE 'IST';
+      ts."date" ;
 
     `,
     [salonId],
