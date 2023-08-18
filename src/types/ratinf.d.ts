@@ -3,4 +3,5 @@ export interface AddRating {
   feedback: string;
   salon_id: string;
   user_id: string;
+  payload?: string;
 }

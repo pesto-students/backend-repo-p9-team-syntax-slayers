@@ -19,17 +19,21 @@ const addRatingService = async (req: Request): Promise<any> => {
     salon_id: salon_id,
     user_id: userId,
   };
-  const newRating = await ratingRepository
-    .createQueryBuilder()
-    .insert()
-    .values(obj)
-    .execute();
+
+  const newRating = await ratingRepository.query(
+    `
+    INSERT INTO public.rating
+    (created_at, updated_at, id, rating, feedback,  salon_id, user_id)
+    VALUES(now(), now(), uuid_generate_v4(), $1, $2, $3, $4);
+  `,
+    [rating, feedback, salon_id, userId],
+  );
 
   return newRating;
 };
 
 const getRatingService = async (req: Request): Promise<any> => {
-  const { salon_id } = req.params;
+  const { salonid } = req.params;
 
   const ratingRepository = (await postgresConnection).manager.getRepository(
     Rating,
@@ -54,7 +58,7 @@ const getRatingService = async (req: Request): Promise<any> => {
             )
             FROM rating r2
             INNER JOIN "user" u ON u.id = r2.user_id
-            WHERE r2.salon_id = '0db5c3bf-d9de-442a-96ce-14b7fcb8b12c'
+            WHERE r2.salon_id = r.salon_id
                 AND r2.is_active = 1
                 group by r2.created_at
             ORDER BY r2.created_at DESC
@@ -65,7 +69,7 @@ const getRatingService = async (req: Request): Promise<any> => {
         AND r.is_active = 1;
 
   `,
-    [salon_id],
+    [salonid],
   );
 
   return salonRatings;
