@@ -46,28 +46,26 @@ const getRatingService = async (req: Request): Promise<any> => {
         s.rating AS "ratingAvg",
         s.rating_count AS "ratingCount",
         (
-            SELECT JSONB_AGG(
-                JSON_BUILD_OBJECT(
-                    'id', u.id,
-                    'name', CONCAT(u.firstname, ' ', u.lastname),
-                    'profilePicURL', u.profile_pic_url,
-                    'rating', r2.rating,
-                    'feedback', r2.feedback,
-                    'createdAT', TO_CHAR(r2.created_at AT TIME zone 'IST', 'DDth Mon HH:MI AM')
-                )
-            )
-            FROM rating r2
+            SELECT JSONB_AGG(ratings) from (
+            select
+            u.id,
+                  CONCAT(u.firstname, ' ', u.lastname) as  "name",
+                    u.profile_pic_url as "profilePicURL",
+                    max(r2.rating) as "rating",
+                    max(r2.feedback) as "feedback",
+                    TO_CHAR(r2.created_at AT TIME zone 'IST', 'DDth Mon HH:MI AM') as "createdAT"
+                FROM rating r2
             INNER JOIN "user" u ON u.id = r2.user_id
-            WHERE r2.salon_id = r.salon_id
+            WHERE r2.salon_id =  r.salon_id
                 AND r2.is_active = 1
-                group by r2.created_at
+                group by r2.created_at, u.id
             ORDER BY r2.created_at DESC
-        ) AS ratings
+            ) as "ratings"
+        ) AS "ratings"
     FROM rating r
     INNER JOIN salon s ON s.id = r.salon_id
     WHERE r.salon_id = $1
         AND r.is_active = 1;
-
   `,
     [salonid],
   );
