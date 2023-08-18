@@ -6,7 +6,7 @@ import { addRating, salonRatings } from '../controllers/RatingController';
 const ratingRouter = Router();
 
 ratingRouter.post(
-  '/salon/:salonid/addRating',
+  '/salon/addRating',
   authMiddleware,
   validateAddRating,
   (req: Request, res: Response) => {
@@ -14,7 +14,7 @@ ratingRouter.post(
   },
 );
 
-ratingRouter.get('/salon/:salonid/ratings', (req: Request, res: Response) => {
+ratingRouter.get('/salon/ratings/:salonid', (req: Request, res: Response) => {
   salonRatings(req, res);
 });
 
