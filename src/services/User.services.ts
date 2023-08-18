@@ -108,6 +108,51 @@ const myUpComingBookingsService = async (
   return myUpcomingBookings;
 };
 
+const addFavouritesService = async (req: Request): Promise<boolean> => {
+  const { payload } = req.body;
+  const { userId } = payload;
+  const { salonid } = req.params;
+
+  const bookmarkRepository = (await postgresConnection).manager.getRepository(
+    Bookmarked,
+  );
+
+  const addFavourite: BookingData = await bookmarkRepository.query(
+    `
+      INSERT INTO public.bookmarked
+      (created_at, updated_at, id, salon_id, user_id)
+      VALUES(now(), now(), uuid_generate_v4(), $1, $2);
+      `,
+    [salonid, userId],
+  );
+
+  if (addFavourite) {
+    return true;
+  } else return false;
+};
+
+const removeFavouritesService = async (req: Request): Promise<boolean> => {
+  const { payload } = req.body;
+  const { userId } = payload;
+  const { salonid } = req.params;
+
+  const bookmarkRepository = (await postgresConnection).manager.getRepository(
+    Bookmarked,
+  );
+
+  const removeFavourite: BookingData = await bookmarkRepository.query(
+    `
+      Delete FROM public.bookmarked
+      WHERE salon_id = $1 and user_id = $2;
+      `,
+    [salonid, userId],
+  );
+
+  if (removeFavourite) {
+    return true;
+  } else return false;
+};
+
 const myFavouritesService = async (req: Request): Promise<MyFavSalonData[]> => {
   const { payload } = req.body;
   const { userId } = payload;
@@ -193,4 +238,6 @@ export {
   myUpComingBookingsService,
   myFavouritesService,
   BookServiceService,
+  addFavouritesService,
+  removeFavouritesService,
 };

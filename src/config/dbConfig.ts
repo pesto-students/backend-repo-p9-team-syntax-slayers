@@ -19,7 +19,7 @@ async function connectToPostgres(): Promise<DataSource> {
       type: 'postgres',
       url: postgresUrl,
       entities: [path.join(__dirname, '../postgres/entity/*.entity{.ts,.js}')],
-      synchronize: true, // Set to false in production
+      synchronize: false, // Set to false in production
       logging: ['error', 'warn'], // Enable detailed logging for debugging
     });
 

@@ -7,6 +7,8 @@ import {
   myFavouritesService,
   myUpComingBookingsService,
   BookServiceService,
+  addFavouritesService,
+  removeFavouritesService,
 } from '../services/User.services';
 
 const myBookings = async (req: Request, res: Response): Promise<void> => {
@@ -32,10 +34,30 @@ const myUpComingBookings = async (
   });
 };
 
+const addFavourites = async (req: Request, res: Response): Promise<void> => {
+  tryCatchWrapper(res, async () => {
+    const addFavourite = await addFavouritesService(req);
+
+    !!addFavourite
+      ? sendResponse(res, 200, true, '')
+      : sendResponse(res, 400, false, '');
+  });
+};
+
+const removeFavourites = async (req: Request, res: Response): Promise<void> => {
+  tryCatchWrapper(res, async () => {
+    const removeFavourite = await removeFavouritesService(req);
+
+    !!removeFavourite
+      ? sendResponse(res, 200, true, '')
+      : sendResponse(res, 200, false, '');
+  });
+};
+
 const myFavourites = async (req: Request, res: Response): Promise<void> => {
   tryCatchWrapper(res, async () => {
     const myFavSalons: MyFavSalonData[] = await myFavouritesService(req);
-    console.log('myFavSalons', myFavSalons);
+
     !!myFavSalons && !!myFavSalons.length
       ? sendResponse(res, 200, true, '', myFavSalons)
       : sendResponse(res, 200, false, 'No favourite list found');
@@ -48,4 +70,11 @@ const BookService = async (req: Request, res: Response): Promise<void> => {
   });
 };
 
-export { myBookings, myFavourites, myUpComingBookings, BookService };
+export {
+  myBookings,
+  myFavourites,
+  myUpComingBookings,
+  BookService,
+  addFavourites,
+  removeFavourites,
+};
