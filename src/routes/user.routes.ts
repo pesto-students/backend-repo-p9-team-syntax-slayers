@@ -6,6 +6,8 @@ import {
   myFavourites,
   myUpComingBookings,
   BookService,
+  addFavourites,
+  removeFavourites,
 } from '../controllers/UserController';
 import { BookingService } from '../postgres/entity/BookingService.entity';
 
@@ -40,6 +42,22 @@ userRouter.get(
   authMiddleware,
   (req: Request, res: Response) => {
     myFavourites(req, res);
+  },
+);
+
+userRouter.post(
+  '/salon/:salonid/addFavourites',
+  authMiddleware,
+  (req: Request, res: Response) => {
+    addFavourites(req, res);
+  },
+);
+
+userRouter.post(
+  '/salon/:salonid/removeFavourites',
+  authMiddleware,
+  (req: Request, res: Response) => {
+    removeFavourites(req, res);
   },
 );
 

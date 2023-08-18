@@ -290,6 +290,7 @@ const getSalonSlotsService = async (req: Request): Promise<Salon | null> => {
       public.time_slot ts
     WHERE
       ts.salon_id = $1
+      and ts."date"::date AT TIME ZONE 'IST' >= current_date
     GROUP BY
       month, day, week, ts."date" AT TIME ZONE 'IST'
     ORDER BY
