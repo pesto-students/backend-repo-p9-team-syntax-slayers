@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { Salon } from '../types/salon';
-import { postgresConnection } from '../config/dbConfig';
+import { postgresConnection, redisConnection } from '../config/dbConfig';
 import { Salon as SalonEntity } from '../postgres/entity/Salon.entity';
 import { Service } from '../postgres/entity/Service.entity';
 import { TimeSlots } from '../postgres/entity/TimeSlot.entity';
@@ -71,19 +71,34 @@ const nearBySalonsService = async (req: Request): Promise<any> => {
     count = 20,
   } = req.body;
 
-  const filterByClause: any = Object.freeze({
-    default: '',
-    active: 'AND s.temp_inactive = 0',
-    inActive: 'AND s.temp_inactive = 1',
-    male: `AND s.gender = 'male'`,
-    female: `AND s.gender = 'female'`,
-    unisex: `AND s.gender = 'unisex'`,
-  });
+  const cachedValue = await (
+    await redisConnection
+  ).get(
+    `Coord:${lon}-${lat}<sortByType:${sortByType}><existingSlonIDs: ${existingSlonIDs}><count: ${count}>`,
+  );
 
-  const sortByClause: any = Object.freeze({
-    relevance: `order by s.rating, s.created_at desc`,
+  // if (cachedValue) {
+  //   console.log('Value from cache:', JSON.parse(cachedValue || ''));
+  // }
 
-    distance: `order by
+  if (cachedValue) {
+    return JSON.parse(cachedValue || '');
+  } else {
+  }
+  if (!cachedValue) {
+    const filterByClause: any = Object.freeze({
+      default: '',
+      active: 'AND s.temp_inactive = 0',
+      inActive: 'AND s.temp_inactive = 1',
+      male: `AND s.gender = 'male'`,
+      female: `AND s.gender = 'female'`,
+      unisex: `AND s.gender = 'unisex'`,
+    });
+
+    const sortByClause: any = Object.freeze({
+      relevance: `order by s.rating, s.created_at desc`,
+
+      distance: `order by
             ST_Distance(
                     ST_Transform(s.location,
             3857),
@@ -92,22 +107,22 @@ const nearBySalonsService = async (req: Request): Promise<any> => {
             4326),
             3857))`,
 
-    rating: 'order by s.rating desc',
-    highToLow: ``,
-    lowToHigh: ``,
-  });
+      rating: 'order by s.rating desc',
+      highToLow: ``,
+      lowToHigh: ``,
+    });
 
-  const radius = 20;
+    const radius = 20;
 
-  const filterBy: filterByTypes = filterByClause[filterByType];
-  const sortBy: sortByTypes = sortByClause[sortByType];
+    const filterBy: filterByTypes = filterByClause[filterByType];
+    const sortBy: sortByTypes = sortByClause[sortByType];
 
-  const salonRepository = (await postgresConnection).manager.getRepository(
-    SalonEntity,
-  );
+    const salonRepository = (await postgresConnection).manager.getRepository(
+      SalonEntity,
+    );
 
-  const nearBySalonsCount: number = await salonRepository.query(
-    `
+    const nearBySalonsCount: number = await salonRepository.query(
+      `
             SELECT
             count(s.id) 
             FROM
@@ -123,10 +138,10 @@ const nearBySalonsService = async (req: Request): Promise<any> => {
             ${filterBy}
         
         `,
-    [lat, lon, radius],
-  );
-  const nearBySalons: Salon[] = await salonRepository.query(
-    `
+      [lat, lon, radius],
+    );
+    const nearBySalons: Salon[] = await salonRepository.query(
+      `
             SELECT
             s.id,
             s.name,
@@ -173,10 +188,24 @@ const nearBySalonsService = async (req: Request): Promise<any> => {
             ${sortBy}
             LIMIT $5
         `,
-    [lat, lon, radius, existingSlonIDs, count],
-  );
+      [lat, lon, radius, existingSlonIDs, count],
+    );
 
-  return { nearBySalons, nearBySalonsCount };
+    const stringifiedToCache = JSON.stringify({
+      nearBySalons,
+      nearBySalonsCount,
+    });
+
+    await (
+      await redisConnection
+    ).setEx(
+      `Coord:${lon}-${lat}<sortByType:${sortByType}><existingSlonIDs: ${existingSlonIDs}><count: ${count}>`,
+      360,
+      `${stringifiedToCache}`,
+    );
+
+    return { nearBySalons, nearBySalonsCount };
+  }
 };
 
 const salonDetailsService = async (req: Request): Promise<Salon | null> => {

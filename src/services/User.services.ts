@@ -68,6 +68,12 @@ const myBookingsCommonQuery = async ({ state, userID }: bookingState) => {
          ${userID ? `and b.user_id = '${userID}'` : ''}
          ${state === 'past' ? bookingStates.past : ''} 
          ${state === 'upcoming' ? bookingStates.upcoming : ''} 
+          ${
+            state === 'upcoming'
+              ? 'order by b.start_time asc'
+              : 'order by b.start_time desc'
+          }
+         
                 ) as "${state}Bookings" ) as "${state}Bookings"
   `;
 };

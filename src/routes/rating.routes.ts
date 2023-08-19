@@ -14,8 +14,11 @@ ratingRouter.post(
   },
 );
 
-ratingRouter.get('/salon/ratings/:salonid', (req: Request, res: Response) => {
-  salonRatings(req, res);
-});
+ratingRouter.get(
+  '/salon/ratings/:salonid/:userId',
+  (req: Request, res: Response) => {
+    salonRatings(req, res);
+  },
+);
 
 export default ratingRouter;

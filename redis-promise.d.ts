@@ -1,7 +1,3 @@
-declare var global: NodeJS.Global & typeof globalThis;
-
-declare var __basedir: string;
-
 declare module 'redis-promise' {
   export interface RedisClient {
     on(arg0: string, arg1: (err: any) => void): unknown;

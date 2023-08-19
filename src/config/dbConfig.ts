@@ -4,6 +4,7 @@ import * as redis from 'redis';
 import 'reflect-metadata';
 import { DataSource, EntityTarget, ObjectLiteral, Repository } from 'typeorm';
 import dotenv from 'dotenv';
+import type { RedisClientType } from 'redis';
 
 dotenv.config();
 
@@ -12,6 +13,9 @@ const {
   POSTGRES_URL: postgresUrl,
   REDIS_URL: redisUrl,
 } = process.env;
+
+let redisClient: RedisClientType;
+let isReady: boolean;
 
 async function connectToPostgres(): Promise<DataSource> {
   try {
@@ -45,7 +49,7 @@ async function connectToMongoDB(): Promise<DataSource> {
       type: 'mongodb',
       url: mongodbUrl,
       entities: [path.join(__dirname, '../mongodb/entity/*.entity{.ts,.js}')],
-      synchronize: true, // Set to false in production
+      synchronize: false, // Set to false in production
       logging: ['error', 'warn'],
     });
 
@@ -64,25 +68,32 @@ async function connectToMongoDB(): Promise<DataSource> {
   }
 }
 
-// const createRedisConnection = async () => {
-//   try {
-//     const client = redis.createClient({
-//       url: redisUrl,
-//     });
+const createRedisConnection = async (): Promise<RedisClientType> => {
+  try {
+    if (!isReady) {
+      redisClient = redis.createClient({
+        url: redisUrl,
+      });
+    }
 
-//     // Optional: Add event listeners to handle connection errors
-//     client.on('error', (err) => console.log('Redis Server Error', err));
-//     client.on('connect', () => console.log('Connected to Redis'));
+    redisClient.on('error', (err: any) =>
+      console.log('Redis Server Error', err),
+    );
+    redisClient.on('connect', () => console.log('Connected to Redis'));
+    redisClient.on('ready', () => {
+      (isReady = true), console.log('Redis Is Ready');
+    });
 
-//     return client.connect();
-//   } catch (error) {
-//     console.error('Failed to connect to Redis:', error);
-//     throw error;
-//   }
-// };
+    await redisClient.connect();
+    return redisClient;
+  } catch (error) {
+    console.error('Failed to connect to Redis:', error);
+    throw error;
+  }
+};
 
 // Optional: If you need a single instance of DB connection throughout your application
-// const redisConnection = createRedisConnection();
+const redisConnection = createRedisConnection();
 const postgresConnection = connectToPostgres();
 const mongodbConnection = connectToMongoDB();
 
@@ -90,7 +101,7 @@ export {
   connectToPostgres,
   connectToMongoDB,
   // createRedisConnection,
-  // redisConnection,
+  redisConnection,
   postgresConnection,
   mongodbConnection,
 };
