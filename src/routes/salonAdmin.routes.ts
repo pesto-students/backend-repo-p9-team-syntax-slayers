@@ -8,6 +8,7 @@ import {
   salonBookingDetails,
   updateSalon,
   updateService,
+  deleteService,
 } from '../controllers/SalonAdminController';
 import {
   validateSalonCreate,
@@ -42,6 +43,14 @@ salonAdminRouter.put(
   validateServiceInput,
   (req: Request, res: Response) => {
     updateService(req, res);
+  },
+);
+
+salonAdminRouter.delete(
+  'deleteSerivce/:service_id',
+  authMiddleware,
+  (req: Request, res: Response) => {
+    deleteService(req, res);
   },
 );
 

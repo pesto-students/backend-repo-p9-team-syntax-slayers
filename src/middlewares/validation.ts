@@ -44,6 +44,18 @@ export const serviceCreateSchema = Joi.object({
   treatment_tags: Joi.array().required(),
   payload: Joi.any().required(),
 });
+export const serviceUpdateSchema = Joi.object({
+  name: Joi.string().required(),
+  description: Joi.string().required(),
+  price: Joi.number().positive().required(),
+  duration: Joi.number().positive().required(),
+  is_active: Joi.number().integer().valid(0, 1).optional(),
+  featured: Joi.number().integer().valid(0, 1).required(),
+  salon_id: Joi.string().required(),
+  treatment_tags: Joi.array().required(),
+  service_id: Joi.string().required(),
+  payload: Joi.any().required(),
+});
 
 export const addRatingSchema = Joi.object<AddRating>({
   rating: Joi.number().required(),
@@ -109,7 +121,7 @@ export const validateServiceInput = (
   res: Response,
   next: NextFunction,
 ): void => {
-  const { error } = serviceCreateSchema.validate(req.body);
+  const { error } = serviceUpdateSchema.validate(req.body);
   if (error) {
     res.status(400).json({ error: error.details[0].message });
     return;

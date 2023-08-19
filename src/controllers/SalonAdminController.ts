@@ -8,6 +8,7 @@ import {
   getSalonDetailsByUserIdService,
   updateSalonService,
   updateServiceService,
+  deleteServiceService,
 } from '../services/SalonAdmin.services';
 import { SalonInput } from '../types/salon';
 import { CreateService } from '../types/services';
@@ -41,6 +42,16 @@ const updateService = async (req: Request, res: Response): Promise<void> => {
     !!createdService
       ? sendResponse(res, 200, true, '', createdService)
       : sendResponse(res, 404, false);
+  });
+};
+
+const deleteService = async (req: Request, res: Response): Promise<void> => {
+  tryCatchWrapper(res, async () => {
+    const deleteService = await deleteServiceService(req);
+    console.log(deleteService);
+    !!deleteService
+      ? sendResponse(res, 200, true, 'service Deleted', deleteService)
+      : sendResponse(res, 404, true, 'something went wrong', deleteService);
   });
 };
 
@@ -87,4 +98,5 @@ export {
   updateSalon,
   updateService,
   salonBookingDetails,
+  deleteService,
 };

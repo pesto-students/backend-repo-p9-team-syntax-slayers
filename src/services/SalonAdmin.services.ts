@@ -210,7 +210,7 @@ const createServiceService = async (
 const updateServiceService = async (
   serviceInput: CreateService,
   req: Request,
-): Promise<CreateService | alreadyExists | null> => {
+): Promise<CreateService | null> => {
   const serviceRepository = (await postgresConnection).manager.getRepository(
     Service,
   );
@@ -221,44 +221,44 @@ const updateServiceService = async (
   const { name, description, price, duration, featured, salon_id } =
     serviceInput;
   console.log(salon_id, 'salonid');
-  const { payload } = req.body;
+  const { payload, service_id } = req.body;
   const { userId, userType } = payload;
 
   if (userType === 'salon_admin') {
-    const isSalonAdmin = await salonRepository
-      .createQueryBuilder('s')
-      .select(['s.id'])
-      .where('s.id = :salon_id', { salon_id: salon_id })
-      .andWhere('s.user_id = :user_id', { user_id: userId });
-
-    if (isSalonAdmin) {
-      const serviceExistsForSalon = await serviceRepository
-        .createQueryBuilder('s')
-        .select(['s.id'])
-        .where('s.name =  :name', { name: name })
-        .andWhere('s.salon_id = :salon_id', { salon_id: salon_id })
-        .getOne();
-
-      if (!serviceExistsForSalon) {
-        return { alreadyExists: false };
-      }
-
-      const [savedService] = await (
-        await postgresConnection
-      ).manager.query(
-        `
+    const [updatedService] = await (
+      await postgresConnection
+    ).manager.query(
+      `
       UPDATE public.service
-      ( id, "name", description, price, duration, featured, salon_id)
-      VALUES( uuid_generate_v4(), $1, $2, $3, $4,  $5, $6)
-      RETURNING *
+      SET 
+         name='${name}',
+         description='${description}',
+         price='${price}',
+         duration='${duration}',
+         featured='${featured}',
+         salon_id='${salon_id}'
+       WHERE id='${service_id}'
     `,
-        [name, description, price, duration, featured, salon_id],
-      );
+    );
 
-      return savedService;
-    }
+    console.log(updatedService, 'updatedService');
+    return updatedService;
   }
   return null;
+};
+
+const deleteServiceService = async (req: Request) => {
+  const serviceRepository = (await postgresConnection).manager.getRepository(
+    Service,
+  );
+
+  const { service_id } = req.params;
+
+  const deleteResponse = await serviceRepository.query(
+    `Delete from service where id=${service_id}`,
+  );
+
+  return deleteResponse;
 };
 
 const getSalonDetailsByUserIdService = async (userId: string) => {
@@ -272,8 +272,6 @@ const getSalonDetailsByUserIdService = async (userId: string) => {
    `,
     [userId],
   );
-
-  console.log(salonDetails, userId);
 
   return salonDetails;
 };
@@ -339,4 +337,5 @@ export {
   updateSalonService,
   updateServiceService,
   getSalonBookingDeatilsService,
+  deleteServiceService,
 };
