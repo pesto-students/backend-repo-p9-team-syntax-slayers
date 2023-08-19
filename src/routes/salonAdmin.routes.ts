@@ -5,6 +5,7 @@ import {
   addSalon,
   addService,
   getSalonDetailsByUserId,
+  salonBookingDetails,
   updateSalon,
   updateService,
 } from '../controllers/SalonAdminController';
@@ -40,7 +41,6 @@ salonAdminRouter.put(
   authMiddleware,
   validateServiceInput,
   (req: Request, res: Response) => {
-    console.log(req, 'aaa');
     updateService(req, res);
   },
 );
@@ -49,8 +49,15 @@ salonAdminRouter.get(
   '/getSalonDetails/:userId',
   authMiddleware,
   (req: Request, res: Response) => {
-    console.log('yoooo');
     getSalonDetailsByUserId(req, res);
+  },
+);
+
+salonAdminRouter.get(
+  '/salonBookingDeatils/:salonId',
+  authMiddleware,
+  (req: Request, res: Response) => {
+    salonBookingDetails(req, res);
   },
 );
 export default salonAdminRouter;

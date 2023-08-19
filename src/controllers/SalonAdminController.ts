@@ -4,6 +4,7 @@ import sendResponse from '../utils/sendResponse';
 import {
   createSalonService,
   createServiceService,
+  getSalonBookingDeatilsService,
   getSalonDetailsByUserIdService,
   updateSalonService,
   updateServiceService,
@@ -67,10 +68,23 @@ const getSalonDetailsByUserId = async (
       : sendResponse(res, 404, false);
   });
 };
+
+const salonBookingDetails = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  tryCatchWrapper(res, async () => {
+    const salonBookingDetails = await getSalonBookingDeatilsService(req);
+    salonBookingDetails
+      ? sendResponse(res, 200, true, '', salonBookingDetails)
+      : sendResponse(res, 404, false);
+  });
+};
 export {
   addSalon,
   addService,
   getSalonDetailsByUserId,
   updateSalon,
   updateService,
+  salonBookingDetails,
 };

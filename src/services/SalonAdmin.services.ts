@@ -255,7 +255,6 @@ const updateServiceService = async (
         [name, description, price, duration, featured, salon_id],
       );
 
-      console.log(savedService, 'savedService');
       return savedService;
     }
   }
@@ -278,10 +277,66 @@ const getSalonDetailsByUserIdService = async (userId: string) => {
 
   return salonDetails;
 };
+
+const getSalonBookingDeatilsService = async (req: Request): Promise<any> => {
+  const salonRepository = (await postgresConnection).manager.getRepository(
+    SalonEntity,
+  );
+
+  const { salonId } = req.params;
+  const salonBookingDetails = await salonRepository.query(
+    `
+    SELECT
+        subquery."bookingId",
+        subquery."userId",
+        subquery."customerName",
+        subquery."StartTime",
+        subquery."paymentConfirmed",
+        (SELECT JSONB_AGG(services) FROM (SELECT s3."name" FROM service s3 WHERE s3.id = subquery."serviceId") AS services) AS services
+    FROM (
+        SELECT
+            b.id AS "bookingId",
+            u.id AS "userId",
+            CONCAT(u.firstname, ' ', u.lastname) AS "customerName",
+            TO_CHAR(b.start_time, 'HH:MI AM') AS "StartTime",
+            TRUE AS "paymentConfirmed",
+            s2."name" AS "serviceName",
+            s2.id AS "serviceId"
+        FROM
+            salon s
+        INNER JOIN booking b ON
+            b.salon_id = s.id 
+            AND b.start_time::date = current_date 
+        INNER JOIN booking_service bs ON bs.booking_id = b.id 
+        INNER JOIN service s2 ON s2.id = bs.service_id 
+        INNER JOIN "user" u ON
+            u.id = b.user_id
+        WHERE
+            s.id = $1
+        ORDER BY
+            b.start_time ASC
+    ) AS subquery
+    GROUP BY
+        subquery."bookingId",
+        subquery."userId",
+        subquery."customerName",
+        subquery."StartTime",
+        subquery."paymentConfirmed",
+        subquery."serviceId"
+    ORDER BY
+        subquery."StartTime" ASC;
+   `,
+    [salonId],
+  );
+
+  return salonBookingDetails;
+};
+
 export {
   createSalonService,
   createServiceService,
   getSalonDetailsByUserIdService,
   updateSalonService,
   updateServiceService,
+  getSalonBookingDeatilsService,
 };
