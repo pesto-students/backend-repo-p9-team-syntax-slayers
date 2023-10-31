@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+
     "target": "ES2021", // The version of ECMAScript to compile to
     "module": "CommonJS", // The module system to use
     "outDir": "./dist", // The output directory for compiled files
@@ -9,6 +12,14 @@
     "skipLibCheck": true, // Skip type checking of declaration files
     "forceConsistentCasingInFileNames": true // Ensure consistent casing for file names
   },
-  "include": ["src/**/*.ts"], // List of files to include for compilation
+  "include": [
+    "src/**/*.ts",
+    "src/postgres/entity/*.entity.ts",
+    "src/postgres/entity/TimeSlotJS.entity.js",
+    "src/postgres/entity/SalonJS.entity.js",
+    "src/CRONJobs/deletePreviousDaySlots.ts",
+    "src/CRONJobs/generate7thDaySlots.ts",
+    "src/CRONJobs/generateFirstTimeSlots.ts"
+  ], // List of files to include for compilation
   "exclude": ["node_modules", "dist"] // List of files to exclude from compilation
 }
